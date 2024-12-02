@@ -36,16 +36,13 @@ async fn main() -> Result<()> {
 
     loop {
         tokio::select! {
-            // Handle incoming logs from the WebSocket stream
             Some(log) = stream.next() => {
                 let deadline = button_contract.deadline().call().await?._0;
                 println!("New deadline: {}", deadline);
 
-                // Reset the timer to 60
                 timer = 57;
             }
 
-            // Timer countdown logic
             _ = sleep(Duration::from_secs(1)) => {
                 if timer > 0 {
                     timer -= 1;
@@ -53,7 +50,7 @@ async fn main() -> Result<()> {
 
                     if timer < 5 {
                         println!("uh oh");
-                        button_contract.press().send().await?
+                        button_contract.press().send().await.watch.await
                     }
                 }
             }
